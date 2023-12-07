@@ -1,18 +1,27 @@
-export default function handler(req, res) {
+import dbConnect from "@/db/dbConnect";
+import QRCode from "@/db/models/QRCode";
+
+export default async function handler(req, res) {
   const { id } = req.query;
+
+  await dbConnect();
+
   switch (req.method) {
     case "GET":
-      res.send(id);
+      const qrcode = await QRCode.findById(id);
+      res.send(qrcode);
       break;
 
     case "PATCH":
-      res.send({
-        ...req.body,
-        id,
+      const updatedQRcode = await QRCode.findByIdAndUpdate(id, req.body, {
+        new: true,
       });
+      res.send(updatedQRcode);
+
       break;
 
     case "DELETE":
+      await QRCode.findByIdAndDelete(id);
       res.status(204).send();
       break;
 

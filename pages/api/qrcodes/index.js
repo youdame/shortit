@@ -1,33 +1,19 @@
-import dbConnect from '@/db/dbConnect';
-import mongoose from 'mongoose';
+import dbConnect from "@/db/dbConnect";
+import QRCode from "@/db/models/QRCode";
 
 export default async function handler(req, res) {
   await dbConnect();
-  console.log(mongoose.connection.readyState);
-
+  console.log(QRCode);
   switch (req.method) {
-    case 'GET':
-      res.send([
-        {
-          id: 'abc',
-          title: '위키피디아 Next.js',
-          url: 'https://en.wikipedia.org/wiki/Next.js',
-        },
-        {
-          id: 'def',
-          title: '코드잇 자유게시판',
-          url: 'https://codeit.kr/community/general',
-        },
-        {
-          id: 'ghi',
-          title: '코드잇 질문답변',
-          url: 'https://www.codeit.kr/community/questions',
-        },
-      ]);
+    case "POST":
+      const newQRcode = await QRCode.create(req.body);
+      res.status(201).send(newQRcode);
       break;
 
-    case 'POST':
-      res.status(201).send(req.body);
+    case "GET":
+      const qrCodes = await QRCode.find();
+
+      res.send(qrCodes);
       break;
 
     default:
